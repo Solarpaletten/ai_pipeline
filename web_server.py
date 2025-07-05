@@ -175,7 +175,7 @@ async def get_agents_status():
     deepseek = await check_deepseek_api()
     
     return {
-        "agents": [dashka.dict(), claude.dict(), deepseek.dict()],
+        "agents": [dashka.model_dump(), claude.model_dump(), deepseek.model_dump()],
         "timestamp": datetime.utcnow().isoformat(),
         "total_agents": 3,
         "online_agents": sum([dashka.is_online, claude.is_online, deepseek.is_online])
@@ -185,7 +185,7 @@ async def get_agents_status():
 async def get_recent_delegations():
     """Получить последние делегирования"""
     return {
-        "delegations": [d.dict() for d in recent_delegations[-20:]],
+        "delegations": [d.model_dump() for d in recent_delegations[-20:]],
         "total": len(recent_delegations)
     }
 
@@ -202,7 +202,7 @@ async def log_delegation(delegation: DelegationEvent):
     if connected_websockets:
         update_data = {
             "type": "new_delegation",
-            "data": delegation.dict()
+            "data": delegation.model_dump()
         }
         for ws in connected_websockets.copy():
             try:
@@ -241,7 +241,7 @@ async def websocket_endpoint(websocket: WebSocket):
         initial_data = {
             "type": "initial_data",
             "agents": await get_agents_status(),
-            "delegations": [d.dict() for d in recent_delegations[-10:]]
+            "delegations": [d.model_dump() for d in recent_delegations[-10:]]
         }
         await websocket.send_text(json.dumps(initial_data))
         

@@ -1,0 +1,113 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>WebSocket Test - AI Pipeline</title>
+    <style>
+        body { font-family: Arial, sans-serif; margin: 20px; }
+        .log { background: #f0f0f0; padding: 10px; height: 300px; overflow-y: scroll; border: 1px solid #ccc; }
+        button { padding: 10px 20px; margin: 5px; background: #007bff; color: white; border: none; border-radius: 5px; }
+        .status { padding: 10px; margin: 10px 0; border-radius: 5px; }
+        .connected { background: #d4edda; border: 1px solid #c3e6cb; }
+        .disconnected { background: #f8d7da; border: 1px solid #f5c6cb; }
+    </style>
+</head>
+<body>
+    <h1>🧪 WebSocket Test - AI Pipeline Level 3</h1>
+    
+    <div id="status" class="status disconnected">
+        🔴 Не подключен
+    </div>
+    
+    <div>
+        <button onclick="connect()">🔌 Подключиться</button>
+        <button onclick="disconnect()">❌ Отключиться</button>
+        <button onclick="sendPing()">📡 Ping</button>
+        <button onclick="clearLog()">🗑️ Очистить лог</button>
+    </div>
+    
+    <h3>📝 Лог WebSocket:</h3>
+    <div id="log" class="log"></div>
+    
+    <script>
+        let ws = null;
+        
+        function log(message) {
+            const logDiv = document.getElementById('log');
+            const time = new Date().toLocaleTimeString();
+            logDiv.innerHTML += `[${time}] ${message}\n`;
+            logDiv.scrollTop = logDiv.scrollHeight;
+        }
+        
+        function updateStatus(connected) {
+            const statusDiv = document.getElementById('status');
+            if (connected) {
+                statusDiv.className = 'status connected';
+                statusDiv.innerHTML = '🟢 Подключен к WebSocket';
+            } else {
+                statusDiv.className = 'status disconnected';
+                statusDiv.innerHTML = '�� Не подключен';
+            }
+        }
+        
+        function connect() {
+            if (ws) {
+                ws.close();
+            }
+            
+            log('🔌 Подключаемся к ws://localhost:8000/ws/dashboard...');
+            ws = new WebSocket('ws://localhost:8000/ws/dashboard');
+            
+            ws.onopen = function() {
+                log('✅ WebSocket подключен!');
+                updateStatus(true);
+            };
+            
+            ws.onmessage = function(event) {
+                try {
+                    const data = JSON.parse(event.data);
+                    log(`📨 Получено: ${JSON.stringify(data, null, 2)}`);
+                } catch (e) {
+                    log(`📨 Получено (raw): ${event.data}`);
+                }
+            };
+            
+            ws.onclose = function() {
+                log('🔌 WebSocket отключен');
+                updateStatus(false);
+            };
+            
+            ws.onerror = function(error) {
+                log(`❌ Ошибка WebSocket: ${error}`);
+                updateStatus(false);
+            };
+        }
+        
+        function disconnect() {
+            if (ws) {
+                ws.close();
+                ws = null;
+            }
+        }
+        
+        function sendPing() {
+            if (ws && ws.readyState === WebSocket.OPEN) {
+                const message = {type: 'ping', timestamp: new Date().toISOString()};
+                ws.send(JSON.stringify(message));
+                log(`📡 Отправлено: ${JSON.stringify(message)}`);
+            } else {
+                log('❌ WebSocket не подключен');
+            }
+        }
+        
+        function clearLog() {
+            document.getElementById('log').innerHTML = '';
+        }
+        
+        // Автоподключение при загрузке
+        window.onload = function() {
+            log('🚀 WebSocket тестер загружен');
+            connect();
+        };
+    </script>
+</body>
+</html>
