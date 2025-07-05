@@ -1,0 +1,67 @@
+# =============================================================================
+# УНИВЕРСАЛЬНЫЙ .gitignore ДЛЯ AI ПРОЕКТОВ
+# =============================================================================
+
+# 🔒 СЕКРЕТЫ И КОНФИГУРАЦИЯ (КРИТИЧНО!)
+.env
+.env.*
+!.env.example
+config/.env
+secrets/
+*.key
+*.pem
+api_keys.txt
+credentials.json
+
+# 🐍 PYTHON
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.Python
+build/
+dist/
+venv/
+.venv/
+*.egg-info/
+
+# 📊 ДАННЫЕ И МОДЕЛИ
+data/
+datasets/
+models/
+*.pkl
+*.h5
+*.bin
+checkpoints/
+wandb/
+
+# 📝 ЛОГИ
+logs/
+*.log
+*.out
+tmp/
+.cache/
+
+# 🐳 DOCKER
+.dockerignore
+
+# 🌐 FRONTEND
+node_modules/
+build/
+dist/
+
+# 🔧 IDE
+.vscode/
+.idea/
+*.swp
+
+# 💻 OS
+.DS_Store
+Thumbs.db
+
+# 🤖 AI СПЕЦИФИЧНОЕ
+*.safetensors
+*.ckpt
+training_data/
+*.faiss
+chromadb/
