@@ -1,0 +1,26 @@
+version: '3.8'
+services:
+  app:
+    build: .
+    env_file: .env
+    ports:
+      - "5000:5000"
+    depends_on:
+      - db
+      - redis
+    healthcheck:
+      test: ["CMD", "python", "scripts/health_check.py"]
+      interval: 30s
+
+  db:
+    image: postgres:14
+    volumes:
+      - pg_data:/var/lib/postgresql/data
+    environment:
+      POSTGRES_PASSWORD: ${DB_PASSWORD}
+  
+  redis:
+    image: redis:alpine
+
+volumes:
+  pg_data:
