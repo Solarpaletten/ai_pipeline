@@ -1,0 +1,126 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AI Pipeline Dashboard</title>
+    <style>
+        body { font-family: Arial, sans-serif; margin: 20px; background: #f5f5f5; }
+        .container { max-width: 1200px; margin: 0 auto; }
+        .card { background: white; border-radius: 8px; padding: 20px; margin: 20px 0; box-shadow: 0 2px 4px rgba(0,0,0,0.1); }
+        .agent { display: inline-block; margin: 10px; padding: 15px; border-radius: 5px; min-width: 200px; }
+        .online { background: #d4edda; border: 1px solid #c3e6cb; }
+        .offline { background: #f8d7da; border: 1px solid #f5c6cb; }
+        .status-dot { display: inline-block; width: 12px; height: 12px; border-radius: 50%; margin-right: 10px; }
+        .green { background-color: #28a745; }
+        .red { background-color: #dc3545; }
+        .yellow { background-color: #ffc107; }
+        button { background: #007bff; color: white; border: none; padding: 10px 20px; border-radius: 5px; cursor: pointer; }
+        button:hover { background: #0056b3; }
+        #log { background: #f8f9fa; border: 1px solid #dee2e6; border-radius: 5px; padding: 15px; height: 300px; overflow-y: scroll; font-family: monospace; }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🚀 AI Pipeline Dashboard</h1>
+        
+        <div class="card">
+            <h2>Статус агентов</h2>
+            <div id="agents-status">
+                <div class="agent online">
+                    <span class="status-dot green"></span>
+                    <strong>🎛️ Dashka</strong><br>
+                    Telegram Bot: Активен<br>
+                    Время ответа: 0.2s
+                </div>
+                <div class="agent online">
+                    <span class="status-dot green"></span>
+                    <strong>🧠 Claude</strong><br>
+                    API: Подключен<br>
+                    Время ответа: 0.3s
+                </div>
+                <div class="agent online">
+                    <span class="status-dot green"></span>
+                    <strong>💻 DeepSeek</strong><br>
+                    API: Подключен<br>
+                    Время ответа: 0.2s
+                </div>
+            </div>
+        </div>
+
+        <div class="card">
+            <h2>Управление</h2>
+            <button onclick="checkStatus()">🔄 Обновить статус</button>
+            <button onclick="testDelegation()">🧪 Тест делегирования</button>
+            <button onclick="connectWebSocket()">🔌 Подключить WebSocket</button>
+        </div>
+
+        <div class="card">
+            <h2>Live лог</h2>
+            <div id="log"></div>
+        </div>
+    </div>
+
+    <script>
+        let ws = null;
+        
+        function log(message) {
+            const logDiv = document.getElementById('log');
+            const time = new Date().toLocaleTimeString();
+            logDiv.innerHTML += `[${time}] ${message}\n`;
+            logDiv.scrollTop = logDiv.scrollHeight;
+        }
+        
+        async function checkStatus() {
+            try {
+                const response = await fetch('/api/agents/status');
+                const data = await response.json();
+                log('✅ Статус обновлен: ' + JSON.stringify(data, null, 2));
+            } catch (error) {
+                log('❌ Ошибка: ' + error.message);
+            }
+        }
+        
+        async function testDelegation() {
+            try {
+                const response = await fetch('/api/test/delegation', { method: 'POST' });
+                const data = await response.json();
+                log('🧪 Тест делегирования: ' + JSON.stringify(data, null, 2));
+            } catch (error) {
+                log('❌ Ошибка теста: ' + error.message);
+            }
+        }
+        
+        function connectWebSocket() {
+            if (ws) {
+                ws.close();
+            }
+            
+            ws = new WebSocket('ws://localhost:8000/ws/dashboard');
+            
+            ws.onopen = function() {
+                log('🔌 WebSocket подключен');
+            };
+            
+            ws.onmessage = function(event) {
+                const data = JSON.parse(event.data);
+                log('📨 WebSocket: ' + JSON.stringify(data, null, 2));
+            };
+            
+            ws.onclose = function() {
+                log('🔌 WebSocket отключен');
+            };
+            
+            ws.onerror = function(error) {
+                log('❌ WebSocket ошибка: ' + error);
+            };
+        }
+        
+        // Автоматически подключаемся при загрузке
+        window.onload = function() {
+            log('🚀 Dashboard загружен');
+            checkStatus();
+        };
+    </script>
+</body>
+</html>

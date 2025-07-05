@@ -1,7 +1,10 @@
 version: '3.8'
+
 services:
   app:
-    build: .
+    build:
+      context: ../
+      dockerfile: Dockerfile
     env_file: .env
     ports:
       - "5000:5000"
@@ -18,9 +21,26 @@ services:
       - pg_data:/var/lib/postgresql/data
     environment:
       POSTGRES_PASSWORD: ${DB_PASSWORD}
-  
+
   redis:
     image: redis:alpine
 
 volumes:
   pg_data:
+
+  # Веб API сервер
+  web-api:
+    build:
+      context: ..
+      dockerfile: Dockerfile.web
+    container_name: ai-pipeline-web
+    ports:
+      - "8000:8000"
+    env_file:
+      - ../.env
+    depends_on:
+      - redis
+      - db
+    restart: unless-stopped
+    networks:
+      - ai-pipeline-network
