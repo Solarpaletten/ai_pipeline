@@ -1,0 +1,31 @@
+version: '3.8'
+
+services:
+  frontend:
+    build:
+      context: .
+      dockerfile: Dockerfile.production
+    container_name: aisolar-frontend
+    restart: unless-stopped
+    ports:
+      - "80:80"
+      - "443:443"
+    environment:
+      - REACT_APP_API_URL=https://backend.aisolar.swapoil.de/api
+      - REACT_APP_WS_URL=wss://backend.aisolar.swapoil.de/ws/dashboard
+    volumes:
+      # SSL certificates (замените на реальные пути)
+      - /etc/ssl/certs/aisolar.crt:/etc/ssl/certs/aisolar.crt:ro
+      - /etc/ssl/private/aisolar.key:/etc/ssl/private/aisolar.key:ro
+      # Nginx logs
+      - ./logs/nginx:/var/log/nginx
+    networks:
+      - aisolar-network
+    labels:
+      - "com.docker.compose.service=frontend"
+      - "com.aisolar.service=dashboard"
+
+networks:
+  aisolar-network:
+    driver: bridge
+    external: false
