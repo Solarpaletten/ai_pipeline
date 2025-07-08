@@ -2,8 +2,11 @@ import { useEffect, useState, useCallback } from 'react';
 import io, { Socket } from 'socket.io-client';
 import { AgentStatus, DelegationEvent, WebSocketMessage } from '../types';
 
-const WEBSOCKET_URL = process.env.REACT_APP_WS_URL || 'ws://aisolar.swapoil.de:8000/ws/dashboard';
-const API_URL = process.env.REACT_APP_API_URL || 'http://aisolar.swapoil.de:8000/api'\;
+/* === 1. читаем хост и path из .env === */
+const WS_HOST = process.env.REACT_APP_WS_HOST;
+const WS_PATH = process.env.REACT_APP_WS_PATH;
+const API_URL = process.env.REACT_APP_API_URL || 'https://backend.aisolar.swapoil.de/api'; 
+
 
 export const useWebSocket = () => {
   const [socket, setSocket] = useState<Socket | null>(null);
@@ -14,9 +17,10 @@ export const useWebSocket = () => {
 
   const connect = useCallback(() => {
     try {
-      console.log('🔌 Connecting to WebSocket:', WEBSOCKET_URL);
-      
-      const newSocket = io(WEBSOCKET_URL, {
+      console.log('🔌 Connecting to WebSocket:', WS_HOST, 'path:', WS_PATH);
+
+      const newSocket = io(WS_HOST, {
+        path: WS_PATH,
         transports: ['websocket', 'polling'],
         timeout: 5000,
         reconnection: true,
@@ -26,7 +30,7 @@ export const useWebSocket = () => {
       });
 
       newSocket.on('connect', () => {
-        console.log('✅ WebSocket connected to backend:', WEBSOCKET_URL);
+        console.log('✅ WebSocket connected to backend:', WS_HOST);
         setConnected(true);
         newSocket.emit('ping');
       });

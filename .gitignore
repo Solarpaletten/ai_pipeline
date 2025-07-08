@@ -65,3 +65,19 @@ Thumbs.db
 training_data/
 *.faiss
 chromadb/
+
+# Private backup files (содержат API ключи)
+private_backup/
+*.key
+*.secret
+api_keys*.txt
+backup_keys*
+secrets/
+
+# Private backup files (содержат API ключи)
+private_backup/
+*.key
+*.secret
+api_keys*.txt
+backup_keys*
+secrets/
