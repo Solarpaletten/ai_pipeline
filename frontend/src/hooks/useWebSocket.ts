@@ -2,7 +2,7 @@ import { useEffect, useState, useCallback } from 'react';
 
 export const useWebSocket = () => {
   const [connected, setConnected] = useState(false);
-  const [agents, setAgents] = useState([]);
+  const [agents, setAgents] = useState<any[]>([]);
   const [lastUpdate, setLastUpdate] = useState(new Date());
 
   // Используем простое подключение к нашему API
@@ -36,7 +36,7 @@ export const useWebSocket = () => {
           
           if (data.agents) {
             // Преобразуем формат для совместимости
-            const formattedAgents = data.agents.map(agent => ({
+            const formattedAgents = data.agents.map((agent: any) => ({
               name: agent.name,
               is_online: agent.is_online,
               token_valid: true,
@@ -70,7 +70,7 @@ export const useWebSocket = () => {
   return {
     connected,
     agents,
-    delegations: [],
+    delegations: [] as any[],
     lastUpdate,
     reconnect: connect,
   };
