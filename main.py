@@ -16,6 +16,7 @@ from fastapi.middleware.cors import CORSMiddleware
 from fastapi.staticfiles import StaticFiles
 from fastapi.responses import HTMLResponse
 import uvicorn
+from api.delegation_v7 import router as delegation_router
 
 # Local imports
 from api.chat_endpoints import router as chat_router
@@ -78,6 +79,7 @@ app.add_middleware(
 
 # Подключаем роутеры
 app.include_router(chat_router)
+app.include_router(delegation_router, prefix="/api/delegation")
 
 # Статические файлы для production
 if os.path.exists("frontend/build"):
@@ -94,6 +96,7 @@ if os.path.exists("frontend/build"):
                 return HTMLResponse(content=f.read())
         except FileNotFoundError:
             return {"error": "Frontend not built"}
+
 
 @app.on_event("startup")
 async def startup_event():
