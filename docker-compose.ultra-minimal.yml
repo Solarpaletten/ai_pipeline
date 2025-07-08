@@ -1,0 +1,24 @@
+version: '3.8'
+
+services:
+  ai-pipeline:
+    build:
+      context: .
+      dockerfile: Dockerfile.ultra-minimal
+    container_name: ai-pipeline-ultra
+    ports:
+      - "8002:8002"
+    environment:
+      - PORT=8002
+      - ENVIRONMENT=production
+    env_file:
+      - .env
+    volumes:
+      - ./logs:/app/logs
+    restart: unless-stopped
+    mem_limit: 256m
+    cpus: 0.5
+
+networks:
+  default:
+    driver: bridge

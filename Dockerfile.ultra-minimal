@@ -1,0 +1,31 @@
+FROM python:3.11-alpine
+
+RUN apk add --no-cache gcc musl-dev curl
+RUN adduser -D -s /bin/sh app
+
+WORKDIR /app
+
+COPY requirements.txt .
+RUN pip install --no-cache-dir -r requirements.txt && rm -rf /root/.cache
+
+COPY main.py .
+COPY api/ ./api/
+COPY core/ ./core/
+COPY models/ ./models/
+COPY storage/ ./storage/
+COPY .env .
+
+# Создаем директории и даем права ПЕРЕД переключением на app пользователя
+RUN mkdir -p logs static && \
+    chown -R app:app /app && \
+    chmod -R 755 /app
+
+# Переключаемся на пользователя app ПОСЛЕ настройки прав
+USER app
+
+EXPOSE 8002
+
+HEALTHCHECK --interval=60s --timeout=5s --start-period=10s \
+    CMD curl -f http://localhost:8002/health || exit 1
+
+CMD ["python", "main.py"]
