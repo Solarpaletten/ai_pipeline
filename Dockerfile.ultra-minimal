@@ -13,16 +13,14 @@ COPY api/ ./api/
 COPY core/ ./core/
 COPY models/ ./models/
 COPY storage/ ./storage/
+COPY src/ ./src/
 COPY .env .
 
-# Создаем директории и даем права ПЕРЕД переключением на app пользователя
 RUN mkdir -p logs static && \
     chown -R app:app /app && \
     chmod -R 755 /app
 
-# Переключаемся на пользователя app ПОСЛЕ настройки прав
 USER app
-
 EXPOSE 8002
 
 HEALTHCHECK --interval=60s --timeout=5s --start-period=10s \

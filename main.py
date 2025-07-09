@@ -20,6 +20,7 @@ from api.delegation_v7 import router as delegation_router
 
 # Local imports
 from api.chat_endpoints import router as chat_router
+from api.delegation_v7 import router as delegation_router
 
 # Загрузка переменных окружения
 load_dotenv()

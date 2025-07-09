@@ -7,21 +7,18 @@ import WebSocketProvider from './contexts/WebSocketContext';
 
 function App() {
   return (
-    <WebSocketProvider>
-      <AgentStatusProvider>
+    <AgentStatusProvider>
+      <WebSocketProvider>
         <Router>
-          <Routes>
-            {/* Основной дашборд */}
-            <Route path="/" element={<Dashboard />} />
-            
-            {/* Панель делегирования задач */}
-            <Route path="/delegation" element={<DelegationDashboard />} />
-            
-            {/* Дополнительные маршруты можно добавить здесь */}
-          </Routes>
+          <div className="App">
+            <Routes>
+              <Route path="/" element={<Dashboard />} />
+              <Route path="/delegation" element={<DelegationDashboard />} />
+            </Routes>
+          </div>
         </Router>
-      </AgentStatusProvider>
-    </WebSocketProvider>
+      </WebSocketProvider>
+    </AgentStatusProvider>
   );
 }
 
